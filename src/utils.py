@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from src.exception import CustomException
 import dill
+from sklearn.metrics import r2_score
 
 
 def save_object(file_path, obj):
@@ -31,6 +32,60 @@ def save_object(file_path, obj):
 
         with open(file_path, "wb") as file_obj:
             dill.dump(obj, file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
+
+
+def evaluate_model(X_train, y_train, X_test, y_test, models):
+    """
+    Evaluates multiple regression models and returns a report of their performance.
+
+    Args:
+        X_train (array-like): Training feature data.
+        y_train (array-like): Training target data.
+        X_test (array-like): Testing feature data.
+        y_test (array-like): Testing target data.
+        models (dict): Dictionary of model names and their corresponding model instances.
+
+    Returns:
+        dict: A dictionary containing model names as keys and their respective R2 scores as values.
+
+    Raises:
+        CustomException: If an error occurs during model evaluation.
+
+    Example:
+        >>> from sklearn.ensemble import RandomForestRegressor
+        >>> models = {
+                "Random Forest": RandomForestRegressor(),
+                "Decision Tree": DecisionTreeRegressor(),
+                "Gradient Boosting": GradientBoostingRegressor(),
+                "XGBoost": XGBRegressor(),
+                "CatBoost": CatBoostRegressor(verbose=0),
+                "KNeighbors": KNeighborsRegressor(),
+                "Linear Regression": LinearRegression(),
+                "AdaBoost": AdaBoostRegressor(),
+            }
+        >>> evaluate_model(X_train, y_train, X_test, y_test, models)
+        {'Random Forest': 0.841, 'Decision Tree': 0.841, 'Gradient Boosting': 0.841, 'XGBoost': 0.841, 'CatBoost': 0.841, 'KNeighbors': 0.841, 'Linear Regression': 0.841, 'AdaBoost': 0.841}
+    """
+    try:
+        report = {}
+        for i in range(len(models)):
+            model = list(models.values())[i]
+            model.fit(X_train, y_train)
+
+            # Predicting on training data
+            y_train_pred = model.predict(X_train)
+            y_test_pred = model.predict(X_test)
+
+            # Evaluating the model
+            train_model_score = r2_score(y_train, y_train_pred)
+            test_model_score = r2_score(y_test, y_test_pred)
+
+            # Storing the model score in the report
+            report[list(models.keys())[i]] = test_model_score
+        return report
 
     except Exception as e:
         raise CustomException(e, sys)

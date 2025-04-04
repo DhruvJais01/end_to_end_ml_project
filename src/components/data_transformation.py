@@ -107,11 +107,14 @@ class DataTransformation:
             test_path (str): The file path to the testing dataset CSV file.
         Raises:
             CustomException: If any error occurs during the data transformation process.
+        Returns:
+            tuple: A tuple containing the transformed training and testing datasets, and the file path of the preprocessor object.
+
         Example:
             >>> data_transformation = DataTransformation()
             >>> train_path = "data/train.csv"
             >>> test_path = "data/test.csv"
-            >>> data_transformation.initiate_data_transformation(train_path, test_path)
+            >>> train_arr, test_arr, preprocessor_path = data_transformation.initiate_data_transformation(train_path, test_path)
         Logs:
             INFO: Read train and test data completed
             INFO: Obtaining preprocessor object
@@ -158,6 +161,12 @@ class DataTransformation:
                 obj=preprocessor,
             )
             logging.info("Preprocessor pickle file saved")
+
+            return (
+                train_arr,
+                test_arr,
+                self.data_transformation_config.preprocessor_obj_file_path,
+            )
 
         except Exception as e:
             raise CustomException(e, sys)
