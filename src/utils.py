@@ -38,6 +38,35 @@ def save_object(file_path, obj):
         raise CustomException(e, sys)
 
 
+def load_object(file_path):
+    """
+    Loads a Python object from a file using dill serialization.
+    This function attempts to open the specified file and deserialize the object
+    stored in it. If the file does not exist, it raises a CustomException.
+
+    Args:
+        file_path (str): The path to the file from which the object will be loaded.
+
+    Returns:
+        object: The deserialized Python object.
+
+    Raises:
+        CustomException: If an error occurs during the loading process, it raises
+                         a CustomException with the original exception and system information.
+
+    Example:
+        >>> from utils import load_object
+        >>> my_data = load_object("data/my_data.pkl")
+        >>> print(my_data)
+    """
+    try:
+        with open(file_path, "rb") as file_obj:
+            return dill.load(file_obj)
+
+    except Exception as e:
+        raise CustomException(e, sys)
+
+
 def evaluate_model(X_train, y_train, X_test, y_test, models, params) -> dict:
     """
     Evaluates multiple regression models and returns a report of their performance.
